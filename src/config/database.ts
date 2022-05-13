@@ -1,15 +1,21 @@
-import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import * as path from 'path';
+import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
 
-const { DB_HOST, DB_USER, DB_PASSWORD, DB_NAME, DB_PORT, NODE_ENV } = process.env;
 
-export default{
-  type: 'postgres',
-  host: DB_HOST,
-  database: DB_NAME,
-  password: DB_PASSWORD,
-  username: DB_USER,
-  port: parseInt(DB_PORT),
-  synchronize: NODE_ENV === 'development',
-  entities: [__dirname + '/../**/*.entity.{js,ts}'],
-} as TypeOrmModuleOptions;
+export default () => ({
+  typeorm: {
+    type: 'postgres',
+    database: process.env.DB_NAME,
+    password: process.env.DB_PASSWORD,
+    host: process.env.DB_HOST,
+    username: process.env.DB_USER,
+    synchronize: process.env.DB_SYNC === 'true',
+    //logging: true,
+    port: parseInt(process.env.DB_PORT),
+    extra: {
+      decimalNumbers: true,
+    },
+    autoLoadEntities: true,
+  } as PostgresConnectionOptions,
+});
 
