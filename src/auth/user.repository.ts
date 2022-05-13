@@ -3,6 +3,8 @@ import { EntityRepository, Repository } from "typeorm";
 import { RegisterUserDto } from "./dto/register-user.dto";
 import { User } from "./entities/user.entity";
 import * as bcrypt from 'bcrypt';
+import { SingInUserDto } from "./dto/singin-user.dto";
+import { SingInResponseDto } from "./dto/singin-user-response.dto";
 
 @EntityRepository(User)
 export class UserRepository extends Repository<User> {
@@ -10,7 +12,7 @@ export class UserRepository extends Repository<User> {
         const { name, email, password } = registerUserDto;
         const hashedPassword = await this.hashPassword(password, await bcrypt.genSalt());
         const user = this.create({ name, email, password: hashedPassword });
-        try {
+        try { 
             await this.save(user);
         } catch (error) {
             if (error.code === '23505') {
@@ -19,6 +21,15 @@ export class UserRepository extends Repository<User> {
                 console.log(error);
             }
         }
+    }
+
+    async singIn(singInUserDto: SingInUserDto): Promise<string> {
+        const { email, password } = singInUserDto;
+        const user = await this.findOne({ email });
+        if (user && bcrypt.compare(password, user.password)) {
+            return user.email;
+        }
+        return null;
     }
 
      private async hashPassword(password: string, salt: string): Promise<string> {
