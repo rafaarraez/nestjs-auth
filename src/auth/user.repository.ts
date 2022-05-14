@@ -5,13 +5,16 @@ import { User } from "./entities/user.entity";
 import * as bcrypt from 'bcrypt';
 import { SignInUserDto } from "./dto/signin-user.dto";
 import { SignInResponseDto } from "./dto/signin-user-response.dto";
+import { v4 } from 'uuid'
+import { ActiveUserDto } from "./dto/activate-user.dto";
 
 @EntityRepository(User)
 export class UserRepository extends Repository<User> {
     async signUp(registerUserDto: RegisterUserDto): Promise<void>{
         const { name, email, password } = registerUserDto;
         const hashedPassword = await this.hashPassword(password, await bcrypt.genSalt());
-        const user = this.create({ name, email, password: hashedPassword });
+        const token = await v4()
+        const user = this.create({ name, email, password: hashedPassword, activationToken: token });
         try { 
             await this.save(user);
         } catch (error) {
@@ -34,5 +37,17 @@ export class UserRepository extends Repository<User> {
 
      private async hashPassword(password: string, salt: string): Promise<string> {
         return bcrypt.hash(password, salt);
+     }
+    
+    async activeUser(user: User): Promise<User>{
+        user.active = true;
+        user.activationToken = null;
+        await this.save(user);
+        return user;
+    }
+
+    async findUserByActivation(activeUserDto: ActiveUserDto): Promise<User>{
+        const { id, code } = activeUserDto;
+        return this.findOne({ id, activationToken: code });
     }
 }

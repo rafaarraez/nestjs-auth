@@ -1,8 +1,10 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { AuthService } from './auth.service';
+import { ActiveUserDto } from './dto/activate-user.dto';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { SignInResponseDto } from './dto/signin-user-response.dto';
 import { SignInUserDto } from './dto/signin-user.dto';
+import { User } from './entities/user.entity';
 
 @Controller('auth')
 export class AuthController {
@@ -18,5 +20,9 @@ export class AuthController {
         return this.authService.signIn(signInUserDto);
     }
 
+    @Get('/activate-account')
+    activateAccount(@Query() activeUserDto: ActiveUserDto): Promise<User>{
+       return this.authService.activateUser(activeUserDto);
+    }
 
 }

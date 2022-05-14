@@ -1,6 +1,6 @@
-import { IsEmail, IsNotEmpty, IsString, Length } from "class-validator";
+import { IsEmail, IsNotEmpty, IsOptional, IsString, Length } from "class-validator";
 
-export class RegisterUserDto{
+export class  RegisterUserDto{
     @IsNotEmpty()
     @IsString()
     @Length(2, 20)
@@ -13,4 +13,7 @@ export class RegisterUserDto{
     @IsNotEmpty()
     @Length(6, 20)
     password: string;
+
+    @IsOptional()
+    activationToken: string;
 }
