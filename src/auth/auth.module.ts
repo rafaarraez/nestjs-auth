@@ -5,6 +5,7 @@ import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+import { RecoverPassword } from './entities/recover-password.entity';
 import { JwtStrategy } from './jwt-strategy';
 import { UserRepository } from './user.repository';
 
@@ -16,7 +17,7 @@ import { UserRepository } from './user.repository';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => configService.get('jwt') as JwtModuleOptions,
     }),
-    TypeOrmModule.forFeature([UserRepository])
+    TypeOrmModule.forFeature([UserRepository, RecoverPassword]),
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy],

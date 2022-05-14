@@ -29,7 +29,7 @@ export class UserRepository extends Repository<User> {
     async signIn(signInUserDto: SignInUserDto): Promise<string> {
         const { email, password } = signInUserDto;
         const user = await this.findOne({ email });
-        if (user && bcrypt.compare(password, user.password)) {
+        if (user && await bcrypt.compare(password, user.password)) {
             return user.email;
         }
         return null;
